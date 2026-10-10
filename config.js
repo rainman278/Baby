@@ -1,5 +1,5 @@
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAZvahDuw1YiDbYltdKP5XxnTqwyY0PN_Y",
   authDomain: "baby-data-4e099.firebaseapp.com",
   projectId: "baby-data-4e099",
@@ -8,5 +8,3 @@ const firebaseConfig = {
   appId: "1:1051940850415:web:1e6c09cb39e9f161cce91a"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
