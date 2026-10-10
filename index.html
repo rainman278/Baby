@@ -6,96 +6,201 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Baby">
-<meta name="theme-color" content="#f6f4ef">
+<meta name="theme-color" content="#fbf6ef">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Baby</title>
 <style>
-:root{--bg:#f6f4ef;--card:#fff;--ink:#1d1d1f;--mute:#6e6e73;--line:#e5e2db;--acc:#3b6cf6;--warn:#d64545;--on:#e8eefe}
-@media (prefers-color-scheme:dark){:root{--bg:#111214;--card:#1c1d20;--ink:#f2f2f2;--mute:#9a9aa0;--line:#2c2d31;--acc:#7ea0ff;--warn:#ff6b6b;--on:#25304d}}
+:root{--bg:#fbf6ef;--card:#fff;--ink:#22395c;--mute:#6c7a8e;--line:#ece5da;--chip:#f2ece2;--navy:#2c4a73;
+  --feed:#f7c74a;--bm:#6aa6dc;--fm:#f0a52c;--oth:#c6beb0;--sol:#86c875;--grow:#a6d995;--warn:#c74848;
+  --shadow:0 1px 2px rgba(34,57,92,.06),0 4px 14px rgba(34,57,92,.07)}
+@media (prefers-color-scheme:dark){:root{--bg:#12161c;--card:#1b212a;--ink:#e8eef7;--mute:#97a3b5;--line:#2a323d;--chip:#252c37;--navy:#3d6aa5;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,sans-serif}
-body{padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;cursor:pointer}
+.serif{font-family:ui-serif,"New York",Georgia,serif;font-weight:500}
 .hidden{display:none!important}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
-h1{font-size:24px;margin:0}
-.link{background:none;border:0;color:var(--acc);font-size:15px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;min-width:0}
-.card .k{font-size:12px;color:var(--mute)}
-.card .v{font-size:18px;font-weight:600}
-.card .s{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.active{background:var(--on);border-radius:14px;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px}
-.active .clock{font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;margin-left:auto}
-.btn{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;background:var(--acc);color:#fff}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.btn.danger{background:transparent;color:var(--warn);border:1px solid var(--line)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
-.grid button{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 4px;font-size:14px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:4px}
-.grid button span{font-size:26px}
-.summary{font-size:14px;color:var(--mute);margin:4px 0 8px}
-.day{font-size:13px;font-weight:600;color:var(--mute);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.04em}
-.item{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
-.item .t{font-variant-numeric:tabular-nums;color:var(--mute);width:44px;flex:none}
-.item .ic{font-size:20px;flex:none}
-.item .main{flex:1;min-width:0}
-.item .note{font-size:13px;color:var(--mute);overflow-wrap:anywhere}
-.item .by{font-size:12px;color:var(--mute)}
-dialog{border:0;border-radius:18px;padding:0;width:min(440px,calc(100vw - 32px));background:var(--card);color:var(--ink)}
-dialog::backdrop{background:rgba(0,0,0,.4)}
-.dlg{padding:18px}
-.dlg h2{margin:0 0 8px;font-size:20px}
-label{display:block;font-size:13px;color:var(--mute);margin:10px 0}
-input,textarea{display:block;width:100%;margin-top:4px;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;-webkit-appearance:none;appearance:none;min-height:44px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.chips button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:15px}
-.chips button.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.row{display:flex;gap:8px;margin-top:16px}
-.row .btn{flex:1;padding:12px 8px}
-.hint{font-size:12px;color:var(--mute);margin:4px 0}
-#login form{max-width:360px;margin:15vh auto 0}
+.mute{color:var(--mute)}
+main{padding:calc(env(safe-area-inset-top) + 12px) 16px calc(88px + env(safe-area-inset-bottom))}
+
+/* login */
+#login form{max-width:360px;margin:15vh auto 0;padding:0 16px}
+#login h1{font-size:32px;margin:0 0 12px}
+#login label{display:block;font-size:13px;color:var(--mute);margin:10px 0}
+#login input{display:block;width:100%;margin-top:4px;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;-webkit-appearance:none;appearance:none}
+.btn{border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:600;background:var(--navy);color:#fff;width:100%}
 .err{color:var(--warn);font-size:14px;min-height:1.2em}
+
+/* header */
+.top{display:flex;align-items:center;gap:12px;margin:4px 0 18px}
+.avatar{width:54px;height:54px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-size:28px;flex:none}
+.top h1{margin:0;font-size:30px;line-height:1.1}
+.link{margin-left:auto;background:none;border:0;color:var(--mute);font-size:14px;padding:6px}
+.pagehead{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px}
+.pagehead h1{margin:0;font-size:30px}
+.addbtn{border:0;background:var(--navy);color:#fff;border-radius:999px;padding:8px 16px;font-size:15px;font-weight:600}
+
+/* cards */
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
+.ch{position:relative;display:flex;align-items:center;padding:12px 18px;min-height:58px}
+.ch h2{margin:0;font-size:26px}
+.ch.feed{background:var(--feed);color:#22395c}
+.ch.grow{background:var(--grow);color:#22395c}
+.ch.plain{background:var(--chip)}
+.fab{position:absolute;right:16px;bottom:-24px;width:50px;height:50px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:30px;line-height:1;box-shadow:0 3px 8px rgba(0,0,0,.22);z-index:1}
+.hero{display:flex;align-items:center;gap:14px;padding:28px 18px 18px}
+.hero svg{width:56px;height:56px;flex:none}
+.hero .t{flex:1;min-width:0}
+.hero .t .serif{font-size:21px}
+.big{font-family:ui-serif,"New York",Georgia,serif;font-size:50px;line-height:1;white-space:nowrap}
+.big sup{font-size:14px;margin-left:2px}
+.frow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:12px 18px}
+.frow svg{width:30px;height:30px;flex:none}
+.fmain{flex:1;min-width:0}
+.fmain .l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:17px}
+.bar{display:flex;align-items:center;gap:8px;margin-top:3px;font-size:14px;color:var(--mute)}
+.bar i{display:block;height:7px;border-radius:4px;min-width:6px}
+.chev{color:var(--mute);font-size:22px;flex:none}
+.morebtn{display:flex;justify-content:space-between;width:100%;border:0;border-top:1px solid var(--line);background:none;padding:13px 18px;text-align:left;font-size:15px}
+.empty{padding:18px;color:var(--mute)}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:3px;margin:12px 16px}
+.seg button{flex:1;border:0;background:none;padding:8px 4px;border-radius:9px;font-size:15px}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+.srow{display:flex;gap:14px;padding:14px 18px 16px;border-top:1px solid var(--line)}
+.srow svg{width:38px;height:38px;flex:none}
+.st{font-size:21px;display:flex;align-items:center;gap:8px}
+.badge{font-family:-apple-system,system-ui,sans-serif;font-size:13px;font-weight:700;background:var(--fm);color:#fff;border-radius:8px;padding:1px 8px}
+.badge.g{background:var(--sol)}
+.kv{font-size:17px;margin-top:2px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:5}
+.tabs button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mute);padding:4px 0}
+.tabs svg{width:26px;height:26px}
+.tabs svg *{stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button.on{color:var(--ink);font-weight:600}
+
+/* icons */
+.ln{stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nf{fill:none}
+.f-feed{fill:var(--feed)} .f-sol{fill:var(--sol)} .f-grow{fill:var(--grow)} .f-card{fill:var(--card)}
+
+/* charts */
+.chart{display:block;width:100%;height:auto}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--mute);font-size:10px;font-family:-apple-system,system-ui,sans-serif}
+.chart .vl{fill:var(--ink);font-size:9px;font-weight:600;font-family:-apple-system,system-ui,sans-serif}
+.c-bm{fill:var(--bm)} .c-fm{fill:var(--fm)} .c-oth{fill:var(--oth)}
+.chart .gline{stroke:var(--navy);stroke-width:2.2;fill:none;stroke-linejoin:round}
+.chart .pt{fill:var(--navy)}
+.chart .pt.sel{fill:var(--card);stroke:var(--navy);stroke-width:2.5}
+.chart .hit{fill:transparent}
+.pad{padding:10px 10px 4px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:2px 18px 14px;font-size:13px;color:var(--mute)}
+.stats{display:flex;border-top:1px solid var(--line)}
+.stats div{flex:1;padding:12px 18px;font-size:13px;color:var(--mute)}
+.stats b{display:block;font-size:20px;color:var(--ink);font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th,.t td{padding:9px 6px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.t th:first-child,.t td:first-child{text-align:left;padding-left:18px}
+.t th:last-child,.t td:last-child{padding-right:18px}
+.t th{color:var(--mute);font-weight:500;font-size:12px}
+.tip{margin:0 14px 16px;background:var(--chip);border-radius:12px;padding:10px 14px;font-size:15px}
+.tip b{font-size:18px}
+
+/* history */
+.wk{display:flex;align-items:center;justify-content:space-between;padding:10px 12px}
+.wk button{border:1px solid var(--line);background:var(--card);border-radius:10px;width:42px;height:36px;font-size:18px}
+.wk button:disabled{opacity:.35}
+.hg{display:grid;grid-template-columns:34px repeat(7,1fr)}
+.dh{text-align:center;font-size:12px;color:var(--mute);padding:6px 0 8px}
+.dh b{display:block;font-size:17px;color:var(--ink);font-weight:500}
+.dh.today{background:var(--navy);color:#fff;border-radius:10px 10px 0 0}
+.dh.today b{color:#fff}
+.hbody{position:relative;height:504px;border-top:1px solid var(--line)}
+.hbody .hg{height:100%;grid-template-rows:100%}
+.hline{position:absolute;left:34px;right:0;border-top:1px dashed var(--line)}
+.hours{position:relative}
+.hours span{position:absolute;right:5px;font-size:10px;color:var(--mute);transform:translateY(-50%);line-height:1}
+.hcol{position:relative;border-left:1px solid var(--line)}
+.hcol.today{background:rgba(44,74,115,.06)}
+.mk{position:absolute;left:9%;width:82%;height:8px;border-radius:3px;border:0;padding:0;margin-top:-4px}
+.mk.b{background:var(--fm)} .mk.bm{background:var(--bm)} .mk.s{background:var(--sol)}
+.mk.mix{background:linear-gradient(90deg,var(--bm) 50%,var(--fm) 50%)}
+.both[hidden],.one[hidden]{display:none}
+.circles button{width:80px;height:80px}
+.now{position:absolute;left:0;right:0;border-top:2px solid var(--navy)}
+
+/* sheet */
+dialog{padding:0;border:0;width:100%;max-width:560px;margin:auto auto 0;border-radius:22px 22px 0 0;background:var(--card);color:var(--ink);max-height:92vh;overflow:auto}
+dialog::backdrop{background:rgba(20,25,35,.45)}
+.sh-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;padding:14px 10px;background:var(--chip)}
+.sh-head[data-tone=feed]{background:var(--feed);color:#22395c}
+.sh-head[data-tone=sol]{background:var(--sol);color:#22395c}
+.sh-head[data-tone=grow]{background:var(--grow);color:#22395c}
+.sh-head h2{flex:1;text-align:center;margin:0;font-size:27px}
+.sh-head button{border:0;background:none;font-size:17px;font-weight:600;padding:6px 8px;min-width:60px;color:inherit}
+.sh-head .x{font-size:22px;font-weight:400;text-align:left}
+.sh-body{padding:4px 18px calc(28px + env(safe-area-inset-bottom))}
+.circles{display:flex;justify-content:center;gap:20px;padding:18px 0 20px;border-bottom:1px solid var(--line)}
+.circles button{width:88px;height:88px;border-radius:50%;border:1.5px solid var(--ink);background:none;font-size:16px;line-height:1.15}
+.circles button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);min-height:58px}
+.row2>.serif{font-size:21px;flex:none}
+.row2 input{border:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;text-align:right;min-width:0;width:100%;-webkit-appearance:none;appearance:none;padding:4px 0}
+.row2 input::-webkit-date-and-time-value{text-align:right}
+.unit{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex:1;color:var(--mute)}
+.unit input{width:100px;flex:none}
+.uselast{display:flex;align-items:center;justify-content:space-between;background:var(--chip);margin:0 -18px;padding:10px 18px;font-size:15px}
+.uselast button{border:1.5px solid var(--ink);background:var(--card);border-radius:10px;padding:5px 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.chips button{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:7px 14px;font-size:15px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.notes{padding:12px 0}
+.notes textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:10px;margin-top:8px}
+.hint{font-size:13px;color:var(--mute);margin:10px 0 0}
+.del{display:block;width:100%;margin-top:18px;border:1px solid var(--line);background:none;color:var(--warn);border-radius:12px;padding:12px;font-size:16px}
+.pick{display:flex;align-items:center;gap:18px;width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:16px 4px;text-align:left}
+.pick svg{width:54px;height:54px;flex:none}
+.pick span{font-size:25px}
 </style>
 </head>
 <body>
 
 <div id="login" class="hidden">
   <form id="loginForm">
-    <h1>Baby log</h1>
+    <h1 class="serif">Baby log</h1>
     <label>Email<input id="email" type="email" autocomplete="username" required></label>
     <label>Password<input id="pw" type="password" autocomplete="current-password" required></label>
     <p class="err" id="loginErr"></p>
-    <button class="btn" style="width:100%">Log in</button>
+    <button class="btn">Log in</button>
   </form>
 </div>
 
 <div id="app" class="hidden">
-  <header><h1>Baby</h1><button class="link" id="signout">Sign out</button></header>
-  <div class="cards" id="cards"></div>
-  <div id="actives"></div>
-  <div class="grid">
-    <button data-act="bottle"><span>🍼</span>Bottle</button>
-    <button data-act="breast"><span>🤱</span>Breast</button>
-    <button data-act="sleep"><span>😴</span>Sleep</button>
-    <button data-act="nappy"><span>💧</span>Nappy</button>
-    <button data-act="solids"><span>🥣</span>Solids</button>
-    <button data-act="note"><span>📝</span>Note</button>
-  </div>
-  <div class="summary" id="summary"></div>
-  <p class="err" id="err"></p>
-  <div id="timeline"></div>
+  <main>
+    <section class="view" id="v-today"></section>
+    <section class="view" id="v-history" hidden></section>
+    <section class="view" id="v-trends" hidden></section>
+    <section class="view" id="v-growth" hidden></section>
+    <p class="err" id="err"></p>
+  </main>
+  <nav class="tabs">
+    <button data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg><span>Today</span></button>
+    <button data-tab="history"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>History</span></button>
+    <button data-tab="trends"><svg viewBox="0 0 24 24"><path d="M5 20V11M10 20V6M15 20v-7M20 20V9M3 20h18"/></svg><span>Trends</span></button>
+    <button data-tab="growth"><svg viewBox="0 0 24 24"><path d="M3 19l5-6 4 3 8-10"/><path d="M15 6h5v5"/></svg><span>Growth</span></button>
+  </nav>
 </div>
 
 <dialog id="dlg">
-  <div class="dlg">
-    <h2 id="dlgTitle"></h2>
-    <div id="dlgBody"></div>
-    <div class="row">
-      <button class="btn danger" id="dlgDel" type="button">Delete</button>
-      <button class="btn ghost" id="dlgCancel" type="button">Cancel</button>
-      <button class="btn" id="dlgSave" type="button">Save</button>
-    </div>
+  <div class="sh-head" id="shHead">
+    <button type="button" class="x" id="shX">✕</button>
+    <h2 id="shTitle" class="serif"></h2>
+    <button type="button" id="shSave">Save</button>
   </div>
+  <div class="sh-body" id="shBody"></div>
 </dialog>
 
 <script type="module">
@@ -109,44 +214,64 @@ const auth = getAuth(fb);
 const db = initializeFirestore(fb, { localCache: persistentLocalCache() }); // works offline, syncs later
 const col = collection(db, "events");
 
-let events = [], unsub = null, me = "", live = false;
+const DAY = 864e5;
+let recent = [], growth = [], me = "", live = false, unsubs = [];
+const ui = { tab: "today", sum: "today", trend: 7, metric: "weight", week: 0, more: false, gsel: null };
+try { const t = localStorage.getItem("tab"); if (["today","history","trends","growth"].includes(t)) ui.tab = t; } catch {}
+
 const $ = s => document.querySelector(s);
 const dlg = $("#dlg");
 
 /* ---------- helpers ---------- */
 const pad = n => String(n).padStart(2, "0");
-const toInput = d => d ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}` : "";
-const fromInput = s => s ? new Date(s) : null;
-const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-const val = id => (document.getElementById(id)?.value || "").trim();
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-function dur(ms){ const m = Math.max(0, Math.round(ms/60000)), h = Math.floor(m/60); return h ? `${h}h ${m%60}m` : `${m}m`; }
-function clock(ms){ const s = Math.max(0, Math.floor(ms/1000)); return `${Math.floor(s/3600)}:${pad(Math.floor(s/60)%60)}:${pad(s%60)}`; }
-function dayLabel(d){
-  const t = new Date(); t.setHours(0,0,0,0);
-  const x = new Date(d); x.setHours(0,0,0,0);
-  const diff = Math.round((t - x) / 864e5);
-  return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : d.toLocaleDateString(undefined, { weekday:"short", day:"numeric", month:"short" });
+const val = id => (document.getElementById(id)?.value || "").trim();
+const sod = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const toInput = d => d ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}` : "";
+const toDateInput = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fmtT = d => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s/g, "").toLowerCase();
+const fmtD = d => d.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
+const fmtDM = d => d.toLocaleDateString([], { day: "numeric", month: "short" });
+const num = (v, dec) => (+v).toFixed(dec).replace(/\.?0+$/, "");
+function dayPrefix(d){
+  const diff = Math.round((sod(new Date()) - sod(d)) / DAY);
+  return diff === 0 ? "" : diff === 1 ? "YD " : d.toLocaleDateString([], { weekday: "short" }) + " ";
 }
-const SIDES = [["L","Left"],["R","Right"],["both","Both"]];
-const NAPPY = [["wet","💧 Wet"],["dirty","💩 Dirty"],["both","Both"]];
-const isTimed = e => e.type === "sleep" || (e.type === "feed" && e.kind === "breast");
+function ago(d){
+  const m = Math.round((Date.now() - d) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return h < 48 ? `${h}h ${m % 60}m ago` : `${Math.floor(h / 24)} days ago`;
+}
+const isBottle = e => e.type === "feed" && e.kind === "bottle";
+const isSolid = e => e.type === "feed" && e.kind === "solids";
+const milkKey = e => e.milk === "breast" ? "bm" : e.milk === "formula" ? "fm" : e.milk === "both" ? "both" : "oth";
+const MILK = { bm: "Breast milk", fm: "Formula", oth: "Milk", both: "Breast milk + formula" };
+const MILKCOL = { bm: "var(--bm)", fm: "var(--fm)", oth: "var(--oth)" };
+/* split of a bottle into breast milk / formula / unspecified mL */
+function split(e){
+  const a = +e.amount || 0;
+  if (e.milk === "both") return { bm: +e.bm || 0, fm: +e.fm || 0, oth: 0 };
+  const k = milkKey(e); const o = { bm: 0, fm: 0, oth: 0 }; o[k] = a; return o;
+}
+const solidName = e => e.food || e.note || "Solids";
+const METRICS = {
+  weight: { label: "Weight", unit: "kg", dec: 3, step: 0.1 },
+  height: { label: "Height", unit: "cm", dec: 1, step: 1 },
+  head:   { label: "Head size", unit: "cm", dec: 1, step: 0.5 },
+};
 
-function icon(e){
-  if (e.type === "feed") return e.kind === "breast" ? "🤱" : e.kind === "solids" ? "🥣" : "🍼";
-  if (e.type === "nappy") return e.kind === "wet" ? "💧" : "💩";
-  return e.type === "sleep" ? "😴" : "📝";
-}
-function label(e){
-  if (e.type === "feed"){
-    if (e.kind === "bottle") return `Bottle ${e.amount ?? "?"} ml`;
-    if (e.kind === "breast") return `Breast ${({L:"left",R:"right",both:"both"})[e.side] || ""}` + (e.end ? ` · ${dur(e.end - e.start)}` : " · in progress");
-    return "Solids";
-  }
-  if (e.type === "sleep") return "Sleep" + (e.end ? ` · ${dur(e.end - e.start)}` : " · in progress");
-  if (e.type === "nappy") return ({ wet:"Wet nappy", dirty:"Dirty nappy", both:"Wet + dirty" })[e.kind] || "Nappy";
-  return e.note || "Note";
-}
+/* ---------- icons ---------- */
+const IC = {
+  bottle: `<svg viewBox="0 0 40 40"><g transform="rotate(-28 20 20)"><rect x="12" y="14" width="16" height="21" rx="4" class="f-feed ln"/><path d="M14 14v-3h12v3M17 11V7a3 3 0 0 1 6 0v4" class="ln nf"/><path d="M12 21h6M12 26h6" class="ln nf"/></g></svg>`,
+  spoon: `<svg viewBox="0 0 40 40"><ellipse cx="16" cy="13" rx="7" ry="9" transform="rotate(-28 16 13)" class="f-sol ln"/><path d="M20 21l10 14" class="ln nf" style="stroke-width:3"/></svg>`,
+  scale: `<svg viewBox="0 0 40 40"><rect x="6" y="7" width="28" height="27" rx="4" class="f-grow ln"/><path d="M13 16a7 7 0 0 1 14 0z" class="f-card ln"/><path d="M20 16l2-4" class="ln nf"/></svg>`,
+  ruler: `<svg viewBox="0 0 40 40"><rect x="10" y="4" width="11" height="32" rx="2" class="f-grow ln"/><path d="M10 10h5M10 16h4M10 22h5M10 28h4M30 6v28M27 9l3-3 3 3M27 31l3 3 3-3" class="ln nf"/></svg>`,
+  head: `<svg viewBox="0 0 40 40"><rect x="4" y="18" width="32" height="10" rx="2" class="f-grow ln"/><path d="M9 18v4M14 18v3M19 18v4M24 18v3M29 18v4M6 11h28M9 8l-3 3 3 3M31 8l3 3-3 3" class="ln nf"/></svg>`,
+};
+const metricIcon = m => m === "weight" ? IC.scale : m === "height" ? IC.ruler : IC.head;
 
 /* ---------- auth ---------- */
 onAuthStateChanged(auth, user => {
@@ -154,7 +279,7 @@ onAuthStateChanged(auth, user => {
     me = (user.email || "").split("@")[0];
     live = true; show("app"); subscribe();
   } else {
-    if (unsub) unsub(); unsub = null; events = []; live = false; show("login");
+    unsubs.forEach(u => u()); unsubs = []; recent = []; growth = []; live = false; show("login");
   }
 });
 function show(id){
@@ -166,212 +291,448 @@ $("#loginForm").addEventListener("submit", async e => {
   try { await signInWithEmailAndPassword(auth, val("email"), $("#pw").value); }
   catch (err){ $("#loginErr").textContent = "Login failed (" + (err.code || err.message) + ")"; }
 });
-$("#signout").onclick = () => { if (confirm("Sign out?")) signOut(auth); };
 
 /* ---------- data ---------- */
+const toEv = d => {
+  const x = d.data();
+  return { id: d.id, ...x, start: x.start?.toDate ? x.start.toDate() : new Date(), end: x.end?.toDate ? x.end.toDate() : null };
+};
+const onErr = err => { $("#err").textContent = "Sync error (" + err.code + "). Check your Firestore rules."; };
 function subscribe(){
-  const since = Timestamp.fromDate(new Date(Date.now() - 14 * 864e5)); // last 14 days
-  const q = query(col, where("start", ">=", since), orderBy("start", "desc"), limit(800));
-  unsub = onSnapshot(q, snap => {
-    $("#err").textContent = "";
-    events = snap.docs.map(d => {
-      const x = d.data();
-      return { id: d.id, ...x, start: x.start.toDate(), end: x.end ? x.end.toDate() : null };
-    });
-    render();
-  }, err => { $("#err").textContent = "Sync error (" + err.code + "). Check your Firestore rules."; });
+  const since = Timestamp.fromDate(addDays(sod(new Date()), -62));
+  unsubs.push(onSnapshot(query(col, where("start", ">=", since), orderBy("start", "desc"), limit(3000)), snap => {
+    $("#err").textContent = ""; recent = snap.docs.map(toEv); render();
+  }, onErr));
+  unsubs.push(onSnapshot(query(col, where("type", "==", "growth")), snap => {
+    growth = snap.docs.map(toEv).sort((a, b) => a.start - b.start); render();
+  }, onErr));
 }
 const save = p => p.catch(err => alert("Couldn't save: " + (err.code || err.message)));
+function clean(o){ for (const k in o) if (o[k] === undefined || o[k] === "") delete o[k]; return o; }
 function add(d){
-  const data = { ...d, start: Timestamp.fromDate(d.start), end: d.end ? Timestamp.fromDate(d.end) : null, by: me, createdAt: serverTimestamp() };
-  if (!data.note) delete data.note;
-  save(addDoc(col, data)); // not awaited: works offline, syncs when back online
+  save(addDoc(col, clean({ ...d, start: Timestamp.fromDate(d.start), by: me, createdAt: serverTimestamp() })));
 }
-const stop = e => save(updateDoc(doc(col, e.id), { end: Timestamp.now() }));
+function upd(id, d){
+  const o = { ...d };
+  if (o.start) o.start = Timestamp.fromDate(o.start);
+  for (const k in o) if (o[k] === undefined) o[k] = null;
+  save(updateDoc(doc(col, id), o));
+}
+const del = id => save(deleteDoc(doc(col, id)));
+
+function sumRange(from, to){
+  const s = { n: 0, ml: 0, bm: 0, fm: 0, oth: 0, sol: [] };
+  for (const e of recent){
+    if (e.start < from || e.start >= to) continue;
+    if (isBottle(e)){ const p = split(e); s.n++; s.bm += p.bm; s.fm += p.fm; s.oth += p.oth; s.ml += p.bm + p.fm + p.oth; }
+    else if (isSolid(e)) s.sol.push(e);
+  }
+  return s;
+}
+const latest = m => { for (let i = growth.length - 1; i >= 0; i--) if (growth[i][m] != null) return growth[i]; return null; };
 
 /* ---------- render ---------- */
-function card(k, v, s){ return `<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${esc(s)}</div></div>`; }
-
 function render(){
-  const now = Date.now();
-  const lastFeed = events.find(e => e.type === "feed");
-  const sleeping = events.find(e => e.type === "sleep" && !e.end);
-  const lastSleep = events.find(e => e.type === "sleep" && e.end);
-  const lastNappy = events.find(e => e.type === "nappy");
-
-  $("#cards").innerHTML =
-    card("Since feed", lastFeed ? dur(now - lastFeed.start) : "—", lastFeed ? label(lastFeed) : "") +
-    (sleeping
-      ? card("Asleep", dur(now - sleeping.start), "since " + hm(sleeping.start))
-      : card("Awake", lastSleep ? dur(now - lastSleep.end) : "—", lastSleep ? "woke " + hm(lastSleep.end) : "")) +
-    card("Since nappy", lastNappy ? dur(now - lastNappy.start) : "—", lastNappy ? label(lastNappy) : "");
-
-  const act = events.filter(e => isTimed(e) && !e.end);
-  $("#actives").innerHTML = act.map(e => `
-    <div class="active">
-      <span style="font-size:24px">${icon(e)}</span>
-      <div>${e.type === "sleep" ? "Sleeping" : "Breastfeeding"}<div class="hint">since ${hm(e.start)}</div></div>
-      <span class="clock tick" data-t="${e.start.getTime()}">${clock(now - e.start)}</span>
-      <button class="btn" data-stop="${e.id}">Stop</button>
-    </div>`).join("");
-
-  $('[data-act="sleep"]').innerHTML = sleeping ? "<span>🌅</span>Wake up" : "<span>😴</span>Sleep";
-
-  // today's summary
-  const t0 = new Date(); t0.setHours(0,0,0,0);
-  const today = events.filter(e => e.start >= t0);
-  const feeds = today.filter(e => e.type === "feed");
-  const ml = feeds.reduce((s, e) => s + (e.kind === "bottle" ? (e.amount || 0) : 0), 0);
-  let sleepMs = 0;
-  for (const e of events) if (e.type === "sleep"){
-    const s = Math.max(e.start.getTime(), t0.getTime()), en = (e.end || new Date()).getTime();
-    if (en > s) sleepMs += en - s;
-  }
-  const naps = today.filter(e => e.type === "nappy");
-  const wet = naps.filter(e => e.kind !== "dirty").length, dirty = naps.filter(e => e.kind !== "wet").length;
-  $("#summary").textContent = `Today: ${feeds.length} feeds${ml ? ` (${ml} ml)` : ""} · ${dur(sleepMs)} sleep · ${wet} wet, ${dirty} dirty`;
-
-  // timeline
-  let html = "", lastDay = "";
-  for (const e of events){
-    const d = dayLabel(e.start);
-    if (d !== lastDay){ html += `<div class="day">${d}</div>`; lastDay = d; }
-    html += `<div class="item" data-id="${e.id}">
-      <div class="t">${hm(e.start)}</div><div class="ic">${icon(e)}</div>
-      <div class="main"><div>${esc(label(e))}</div>
-        ${e.note && e.type !== "note" ? `<div class="note">${esc(e.note)}</div>` : ""}
-        ${e.by ? `<div class="by">${esc(e.by)}</div>` : ""}
-      </div></div>`;
-  }
-  $("#timeline").innerHTML = html || `<p class="hint">Nothing logged yet. Tap a button above.</p>`;
+  if (!live) return;
+  document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "v-" + ui.tab);
+  document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === ui.tab));
+  ({ today: renderToday, history: renderHistory, trends: renderTrends, growth: renderGrowth })[ui.tab]();
 }
 
-/* ---------- dialogs ---------- */
-const timeField = (id, lab, d) => `<label>${lab}<input id="${id}" type="datetime-local" value="${toInput(d)}"></label>`;
-const noteField = (v = "") => `<label>Note (optional)<textarea id="f_note" rows="2">${esc(v)}</textarea></label>`;
-const chips = (name, opts, sel) => `<div class="chips" data-name="${name}">${opts.map(([v, l]) => `<button type="button" data-v="${v}" class="${v === sel ? "on" : ""}">${l}</button>`).join("")}</div>`;
-const chipVal = name => dlg.querySelector(`.chips[data-name="${name}"] .on`)?.dataset.v;
+function renderToday(){
+  const feeds = recent.filter(e => isBottle(e) || isSolid(e));
+  const lastB = feeds.find(isBottle);
+  const shown = feeds.slice(0, ui.more ? 40 : 6);
+  const maxA = Math.max(150, ...shown.filter(isBottle).map(e => +e.amount || 0));
 
+  const rows = shown.map(e => {
+    const t = `<b>${dayPrefix(e.start)}${fmtT(e.start)}</b>`;
+    if (isBottle(e)){
+      const k = milkKey(e), p = split(e), a = p.bm + p.fm + p.oth;
+      const segs = ["bm", "fm", "oth"].filter(x => p[x]).map(x => `<i style="flex:${p[x]};background:${MILKCOL[x]}"></i>`).join("") || `<i style="flex:1;background:var(--oth)"></i>`;
+      const amt = k === "both" ? `${p.bm} + ${p.fm} = ${a} mL` : `${a} mL`;
+      return `<button class="frow" data-edit="${e.id}">${IC.bottle}<div class="fmain"><div class="l">${t}&nbsp; ${MILK[k]}</div>
+        <div class="bar"><span style="display:flex;gap:2px;flex:none;width:${Math.max(6, a / maxA * 62)}%">${segs}</span><span style="white-space:nowrap">${amt}</span></div></div><span class="chev">›</span></button>`;
+    }
+    return `<button class="frow" data-edit="${e.id}">${IC.spoon}<div class="fmain"><div class="l">${t}&nbsp; ${esc(solidName(e))}</div>
+      ${e.qty ? `<div class="bar">${esc(e.qty)}</div>` : ""}</div><span class="chev">›</span></button>`;
+  }).join("");
+
+  const now = new Date();
+  const [from, to] = ui.sum === "today" ? [sod(now), addDays(sod(now), 1)] : [new Date(+now - DAY), new Date(+now + 1)];
+  const s = sumRange(from, to);
+
+  const growthRows = Object.keys(METRICS).map(m => {
+    const g = latest(m), M = METRICS[m];
+    return `<button class="frow" data-tab="growth" data-metric="${m}">${metricIcon(m)}<div class="fmain"><div class="l serif" style="font-size:20px">${M.label}</div>
+      <div class="mute" style="font-size:14px">${g ? fmtD(g.start) : "No entries yet"}</div></div>
+      <span style="font-size:17px">${g ? num(g[m], M.dec) + " " + M.unit : ""}</span><span class="chev">›</span></button>`;
+  }).join("");
+
+  $("#v-today").innerHTML = `
+    <div class="top"><div class="avatar">👶</div>
+      <div><h1 class="serif">Baby</h1><div class="mute">${now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })}</div></div>
+      <button class="link" data-act="signout">Sign out</button></div>
+
+    <div class="card">
+      <div class="ch feed"><h2 class="serif">Feed</h2><button class="fab" data-act="addFeed" aria-label="Add feed">+</button></div>
+      <div class="hero">${IC.bottle}
+        <div class="t"><div class="serif">Last feeding</div><div class="mute">${lastB ? ago(lastB.start) + " · " + MILK[milkKey(lastB)] : "Nothing logged yet"}</div></div>
+        ${lastB ? `<div class="big">${+lastB.amount || 0}<sup>mL</sup></div>` : ""}</div>
+      ${rows}
+      ${feeds.length > 6 ? `<button class="morebtn" data-act="more"><span>${ui.more ? "Show less" : "Show more"}</span><span>${ui.more ? "︿" : "﹀"}</span></button>` : ""}
+    </div>
+
+    <div class="card">
+      <div class="ch plain"><h2 class="serif">Summary</h2></div>
+      <div class="seg"><button data-sum="today" class="${ui.sum === "today" ? "on" : ""}">Today</button><button data-sum="24h" class="${ui.sum === "24h" ? "on" : ""}">Last 24 hours</button></div>
+      <div class="srow">${IC.bottle}<div>
+        <div class="st serif">Milk feeds <span class="badge">${s.n}</span></div>
+        <div class="kv"><b>${s.ml} mL</b> total</div>
+        <div class="kv"><span class="dot" style="background:var(--bm)"></span>${s.bm} mL breast milk</div>
+        <div class="kv"><span class="dot" style="background:var(--fm)"></span>${s.fm} mL formula</div>
+        ${s.oth ? `<div class="kv"><span class="dot" style="background:var(--oth)"></span>${s.oth} mL unspecified</div>` : ""}
+      </div></div>
+      <div class="srow">${IC.spoon}<div>
+        <div class="st serif">Solids <span class="badge g">${s.sol.length}</span></div>
+        <div class="kv mute">${s.sol.length ? s.sol.map(e => esc(solidName(e)) + (e.qty ? ` (${esc(e.qty)})` : "")).join(", ") : "None"}</div>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="ch grow"><h2 class="serif">Growth</h2><button class="fab" data-act="addGrowth" aria-label="Add growth">+</button></div>
+      <div style="height:14px"></div>${growthRows}
+    </div>`;
+}
+
+function renderHistory(){
+  const today = sod(new Date());
+  const start = addDays(today, -6 + ui.week * 7);
+  const days = [...Array(7)].map((_, i) => addDays(start, i));
+  const H = 504;
+  const head = days.map(d => `<div class="dh ${+d === +today ? "today" : ""}">${d.toLocaleDateString([], { weekday: "short" }).slice(0, 2)}<b>${d.getDate()}</b></div>`).join("");
+  const cols = days.map(d => {
+    const end = addDays(d, 1);
+    const marks = recent.filter(e => (isBottle(e) || isSolid(e)) && e.start >= d && e.start < end).map(e => {
+      const pct = (e.start - d) / (end - d) * 100;
+      const k = isSolid(e) ? "" : milkKey(e);
+      const cls = isSolid(e) ? "s" : k === "bm" ? "bm" : k === "both" ? "mix" : "b";
+      return `<button class="mk ${cls}" style="top:${pct}%" data-edit="${e.id}" aria-label="${fmtT(e.start)}"></button>`;
+    }).join("");
+    const nowLine = +d === +today ? `<div class="now" style="top:${(Date.now() - d) / DAY * 100}%"></div>` : "";
+    return `<div class="hcol ${+d === +today ? "today" : ""}">${marks}${nowLine}</div>`;
+  }).join("");
+  const hours = [0, 3, 6, 9, 12, 15, 18, 21, 24];
+  const lines = hours.map(h => `<div class="hline" style="top:${h / 24 * H}px"></div>`).join("");
+  const labels = hours.map(h => `<span style="top:${h / 24 * H}px">${h === 0 || h === 24 ? "12a" : h === 12 ? "12p" : h > 12 ? h - 12 : h}</span>`).join("");
+  const s = sumRange(days[0], addDays(days[6], 1));
+
+  $("#v-history").innerHTML = `
+    <div class="pagehead"><h1 class="serif">History</h1><button class="addbtn" data-act="addFeed">+ Feed</button></div>
+    <div class="card">
+      <div class="wk"><button data-week="-1" ${ui.week <= -8 ? "disabled" : ""}>‹</button>
+        <b>${fmtDM(days[0])} – ${fmtDM(days[6])}</b>
+        <button data-week="1" ${ui.week >= 0 ? "disabled" : ""}>›</button></div>
+      <div class="hg"><div></div>${head}</div>
+      <div class="hbody">${lines}<div class="hg"><div class="hours">${labels}</div>${cols}</div></div>
+      <div class="legend" style="padding-top:12px"><span><span class="dot" style="background:var(--bm)"></span>Breast milk</span><span><span class="dot" style="background:var(--fm)"></span>Formula</span><span><span class="dot" style="background:var(--sol)"></span>Solids</span></div>
+      <div class="stats"><div><b>${s.n}</b>milk feeds</div><div><b>${s.ml} mL</b>total milk</div><div><b>${s.sol.length}</b>solids</div></div>
+    </div>`;
+}
+
+/* nice axis ticks */
+function nice(min, max, count = 5){
+  if (max === min){ max = min + 1; }
+  const raw = (max - min) / count, mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(x => x >= raw);
+  const lo = Math.floor(min / step + 1e-9) * step, hi = Math.ceil(max / step - 1e-9) * step;
+  const out = [];
+  for (let v = lo; v <= hi + step / 2; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+
+function columnChart(days){
+  const W = 340, H = 230, L = 38, R = 6, T = 16, B = days.length === 7 ? 34 : 24;
+  const n = days.length, pw = W - L - R, ph = H - T - B, slot = pw / n, bw = Math.max(3, slot * 0.64);
+  const max = Math.max(0, ...days.map(x => x.bm + x.fm + x.oth));
+  const ticks = nice(0, max || 100, 4), top = ticks[ticks.length - 1];
+  const y = v => T + ph - v / top * ph;
+  let g = ticks.map(t => `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text class="ax" x="${L - 5}" y="${y(t) + 3.5}" text-anchor="end">${t}</text>`).join("");
+  days.forEach((d, i) => {
+    const x = L + i * slot + (slot - bw) / 2;
+    let base = 0;
+    for (const k of ["bm", "fm", "oth"]){
+      if (!d[k]) continue;
+      g += `<rect class="c-${k}" x="${x}" y="${y(base + d[k])}" width="${bw}" height="${y(base) - y(base + d[k])}" rx="${base === 0 ? 2 : 0}"/>`;
+      base += d[k];
+    }
+    if (n <= 14 && base > 0) g += `<text class="vl" x="${x + bw / 2}" y="${y(base) - 4}" text-anchor="middle">${base}</text>`;
+    const showLbl = n <= 14 || i % 5 === (n - 1) % 5;
+    if (showLbl) g += `<text class="ax" x="${x + bw / 2}" y="${T + ph + 14}" text-anchor="middle">${d.d.getDate()}</text>`;
+    if (n === 7) g += `<text class="ax" x="${x + bw / 2}" y="${T + ph + 27}" text-anchor="middle">${d.d.toLocaleDateString([], { weekday: "short" }).slice(0, 2)}</text>`;
+  });
+  g += `<text class="ax" x="${L - 5}" y="${T - 6}" text-anchor="end">mL</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Milk per day">${g}</svg>`;
+}
+
+function renderTrends(){
+  const today = sod(new Date());
+  const N = ui.trend;
+  const days = [...Array(N)].map((_, i) => {
+    const d = addDays(today, i - N + 1), s = sumRange(d, addDays(d, 1));
+    return { d, bm: s.bm, fm: s.fm, oth: s.oth, n: s.n, ml: s.ml, sol: s.sol.length };
+  });
+  const done = days.slice(0, -1).filter(x => x.n > 0 || x.sol > 0);
+  const avg = done.length ? Math.round(done.reduce((a, x) => a + x.ml, 0) / done.length) : 0;
+  const avgN = done.length ? (done.reduce((a, x) => a + x.n, 0) / done.length).toFixed(1) : "0";
+  const hasOth = days.some(x => x.oth);
+  const rows = [...days].reverse().map(x => `<tr><td>${+x.d === +today ? "Today" : x.d.toLocaleDateString([], { weekday: "short" }) + " " + x.d.getDate()}</td>
+    <td>${x.n}</td><td>${x.bm}</td><td>${x.fm}</td><td><b>${x.ml}</b></td><td>${x.sol}</td></tr>`).join("");
+
+  $("#v-trends").innerHTML = `
+    <div class="pagehead"><h1 class="serif">Trends</h1></div>
+    <div class="card">
+      <div class="ch feed"><h2 class="serif">Milk per day</h2></div>
+      <div class="seg">${[7, 14, 30].map(n => `<button data-trend="${n}" class="${N === n ? "on" : ""}">${n} days</button>`).join("")}</div>
+      <div class="pad">${columnChart(days)}</div>
+      <div class="legend"><span><span class="dot" style="background:var(--bm)"></span>Breast milk</span><span><span class="dot" style="background:var(--fm)"></span>Formula</span>${hasOth ? `<span><span class="dot" style="background:var(--oth)"></span>Unspecified</span>` : ""}</div>
+      <div class="stats"><div><b>${avg} mL</b>avg per day</div><div><b>${avgN}</b>feeds per day</div></div>
+      <p class="hint" style="padding:0 18px 12px;margin:0">Averages leave out today, because it isn't finished yet.</p>
+    </div>
+    <div class="card">
+      <table class="t"><thead><tr><th>Day</th><th>Feeds</th><th>Breast</th><th>Formula</th><th>Total mL</th><th>Solids</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+}
+
+function timeTicks(t0, t1){
+  const span = (t1 - t0) / DAY, out = [];
+  if (span > 75){
+    const step = Math.max(1, Math.ceil(span / 30 / 6));
+    let d = new Date(new Date(t0).getFullYear(), new Date(t0).getMonth() + 1, 1);
+    while (+d <= t1){
+      out.push({ t: +d, l: d.toLocaleDateString([], { month: "short" }) + (d.getMonth() === 0 ? " " + String(d.getFullYear()).slice(2) : "") });
+      d = new Date(d.getFullYear(), d.getMonth() + step, 1);
+    }
+  } else {
+    const step = span > 35 ? 14 : span > 14 ? 7 : span > 6 ? 2 : 1;
+    let d = sod(new Date(t0)); if (+d < t0) d = addDays(d, 1);
+    while (+d <= t1){ out.push({ t: +d, l: fmtDM(d) }); d = addDays(d, step); }
+  }
+  return out;
+}
+
+function lineChart(pts, M){
+  const W = 340, H = 250, L = 42, R = 14, T = 16, B = 28;
+  const pw = W - L - R, ph = H - T - B;
+  let t0 = +pts[0].t, t1 = +pts[pts.length - 1].t;
+  if (t1 - t0 < 7 * DAY){ const mid = (t0 + t1) / 2; t0 = mid - 4 * DAY; t1 = mid + 4 * DAY; }
+  else { const p = (t1 - t0) * 0.05; t0 -= p; t1 += p; }
+  let vmin = Math.min(...pts.map(p => p.v)), vmax = Math.max(...pts.map(p => p.v));
+  if (vmax - vmin < M.step){ const mid = (vmin + vmax) / 2; vmin = mid - M.step; vmax = mid + M.step; }
+  else { const p = (vmax - vmin) * 0.08; vmin -= p; vmax += p; }
+  const yt = nice(vmin, vmax, 5), y0 = yt[0], y1 = yt[yt.length - 1];
+  const x = t => L + (t - t0) / (t1 - t0) * pw, y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+  let g = yt.map(v => `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 5}" y="${y(v) + 3.5}" text-anchor="end">${num(v, 2)}</text>`).join("");
+  g += timeTicks(t0, t1).map(k => `<line class="gl" x1="${x(k.t)}" x2="${x(k.t)}" y1="${T}" y2="${T + ph}" style="stroke-dasharray:2 3"/><text class="ax" x="${x(k.t)}" y="${H - 9}" text-anchor="middle">${k.l}</text>`).join("");
+  g += `<text class="ax" x="${L - 5}" y="${T - 6}" text-anchor="end">${M.unit}</text>`;
+  if (pts.length > 1) g += `<polyline class="gline" points="${pts.map(p => `${x(+p.t)},${y(p.v)}`).join(" ")}"/>`;
+  g += pts.map(p => `<circle class="pt ${p.id === ui.gsel ? "sel" : ""}" cx="${x(+p.t)}" cy="${y(p.v)}" r="${p.id === ui.gsel ? 6 : 4.5}"/>`).join("");
+  g += pts.map(p => `<circle class="hit" data-gp="${p.id}" cx="${x(+p.t)}" cy="${y(p.v)}" r="13"/>`).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${M.label} over time">${g}</svg>`;
+}
+
+function renderGrowth(){
+  const m = ui.metric, M = METRICS[m];
+  const pts = growth.filter(e => e[m] != null).map(e => ({ t: e.start, v: +e[m], id: e.id }));
+  if (pts.length && !pts.some(p => p.id === ui.gsel)) ui.gsel = pts[pts.length - 1].id;
+  let tip = "";
+  const i = pts.findIndex(p => p.id === ui.gsel);
+  if (i >= 0){
+    const p = pts[i], prev = pts[i - 1];
+    let ch = "";
+    if (prev){
+      const dv = p.v - prev.v, dd = (p.t - prev.t) / DAY;
+      const fmt = m === "weight" ? `${dv >= 0 ? "+" : "−"}${Math.round(Math.abs(dv) * 1000)} g` : `${dv >= 0 ? "+" : "−"}${num(Math.abs(dv), 1)} cm`;
+      const rate = dd >= 1 ? (m === "weight" ? ` · ≈ ${Math.round(dv * 1000 / dd * 7)} g/week` : ` · ≈ ${num(dv / dd * 30.44, 1)} cm/month`) : "";
+      ch = `<div class="mute">${fmt} since ${fmtDM(prev.t)}${rate}</div>`;
+    }
+    tip = `<div class="tip"><div class="mute">${fmtD(p.t)}</div><b>${num(p.v, M.dec)} ${M.unit}</b>${ch}</div>`;
+  }
+  const list = [...growth].reverse().map(e => {
+    const parts = Object.keys(METRICS).filter(k => e[k] != null).map(k => `${num(e[k], METRICS[k].dec)} ${METRICS[k].unit}`);
+    return `<button class="frow" data-edit="${e.id}">${IC.scale}<div class="fmain"><div class="l">${fmtD(e.start)}</div><div class="mute" style="font-size:14px">${parts.join(" · ")}</div></div><span class="chev">›</span></button>`;
+  }).join("");
+
+  $("#v-growth").innerHTML = `
+    <div class="pagehead"><h1 class="serif">Growth</h1><button class="addbtn" data-act="addGrowth">+ Measure</button></div>
+    <div class="card">
+      <div class="seg">${Object.keys(METRICS).map(k => `<button data-metric="${k}" class="${k === m ? "on" : ""}">${METRICS[k].label}</button>`).join("")}</div>
+      ${pts.length ? `<div class="pad">${lineChart(pts, M)}</div>${tip}` : `<p class="empty">No ${M.label.toLowerCase()} entries yet. Tap <b>+ Measure</b> to add one.</p>`}
+    </div>
+    ${growth.length ? `<div class="card"><div class="ch plain"><h2 class="serif" style="font-size:22px">All measurements</h2></div>${list}</div>` : ""}`;
+}
+
+/* ---------- sheets ---------- */
+function sheet({ title, tone, body, onSave, onDelete }){
+  $("#shTitle").textContent = title;
+  $("#shHead").dataset.tone = tone || "";
+  $("#shSave").hidden = !onSave;
+  $("#shBody").innerHTML = body + (onDelete ? `<button type="button" class="del" id="shDel">Delete entry</button>` : "");
+  $("#shSave").onclick = () => { if (onSave() !== false) dlg.close(); };
+  if (onDelete) $("#shDel").onclick = () => { if (confirm("Delete this entry?")){ onDelete(); dlg.close(); } };
+  dlg.showModal();
+  dlg.scrollTop = 0;
+  showTotal();
+}
+$("#shX").onclick = () => dlg.close();
 dlg.addEventListener("click", e => {
-  const b = e.target.closest(".chips button"); if (!b) return;
+  if (e.target === dlg) return dlg.close();
+  const u = e.target.closest("[data-uselast]");
+  if (u){ document.getElementById("f_amt").value = u.dataset.uselast; return; }
+  const b = e.target.closest("[data-fill] button, [data-name] button"); if (!b) return;
   const box = b.parentElement;
   if (box.dataset.fill){ document.getElementById(box.dataset.fill).value = b.dataset.v; return; }
   box.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on");
+  if (box.dataset.name === "milk"){
+    const both = b.dataset.v === "both";
+    dlg.querySelector(".one").hidden = both;
+    dlg.querySelector(".both").hidden = !both;
+    showTotal();
+  }
 });
-$("#dlgCancel").onclick = () => dlg.close();
-
-function openDlg(title, body, onSave, onDelete){
-  $("#dlgTitle").textContent = title;
-  $("#dlgBody").innerHTML = body;
-  $("#dlgSave").onclick = () => { if (onSave() !== false) dlg.close(); };
-  $("#dlgDel").hidden = !onDelete;
-  $("#dlgDel").onclick = onDelete || null;
-  dlg.showModal();
+function showTotal(){
+  const t = document.getElementById("f_tot"); if (!t) return;
+  const bm = parseInt(val("f_bm"), 10) || 0, fm = parseInt(val("f_fm"), 10) || 0;
+  t.textContent = bm + fm ? `Total ${bm + fm} mL` : "";
 }
-function needStart(){ const s = fromInput(val("f_start")); if (!s){ alert("Please set a time"); return null; } return s; }
+dlg.addEventListener("input", e => { if (e.target.id === "f_bm" || e.target.id === "f_fm") showTotal(); });
+const chipVal = name => dlg.querySelector(`[data-name="${name}"] .on`)?.dataset.v;
+const rowTime = (id, label, d) => `<label class="row2"><span class="serif">${label}</span><input id="${id}" type="datetime-local" value="${toInput(d)}"></label>`;
+const rowNote = v => `<div class="notes"><span class="serif" style="font-size:21px">Notes</span><textarea id="f_note" rows="2">${esc(v || "")}</textarea></div>`;
+function needTime(id = "f_start"){ const s = val(id) ? new Date(val(id)) : null; if (!s || isNaN(s)){ alert("Please set a time"); return null; } return s; }
 
-function dlgBottle(){
-  const last = events.find(e => e.kind === "bottle")?.amount || 90;
-  openDlg("🍼 Bottle",
-    `<label>Amount (ml)<input id="f_amt" type="number" inputmode="numeric" value="${last}"></label>
-     <div class="chips" data-fill="f_amt">${[60,90,120,150,180,210].map(v => `<button type="button" data-v="${v}">${v}</button>`).join("")}</div>
-     ${timeField("f_start", "Time", new Date())}${noteField()}`,
-    () => {
-      const amount = parseInt(val("f_amt"), 10); if (!amount){ alert("Enter an amount"); return false; }
-      const start = needStart(); if (!start) return false;
-      add({ type:"feed", kind:"bottle", amount, start, note: val("f_note") });
-    });
+function pickFeed(){
+  sheet({ title: "Add feed", body: `
+    <button type="button" class="pick" data-act="bottle">${IC.bottle}<span class="serif">Bottle feed</span></button>
+    <button type="button" class="pick" data-act="solids">${IC.spoon}<span class="serif">Solids</span></button>` });
 }
 
-function dlgBreast(){
-  const lastSide = events.find(e => e.kind === "breast")?.side;
-  const def = lastSide === "L" ? "R" : "L";
-  openDlg("🤱 Breastfeed",
-    chips("side", SIDES, def) +
-    (lastSide ? `<p class="hint">Last time: ${lastSide === "both" ? "both" : lastSide === "L" ? "left" : "right"}</p>` : "") +
-    timeField("f_start", "Start", new Date()) +
-    `<label>Minutes<input id="f_min" type="number" inputmode="numeric" placeholder="Leave blank to start a timer"></label>` + noteField(),
-    () => {
-      const start = needStart(); if (!start) return false;
-      const min = parseInt(val("f_min"), 10);
-      add({ type:"feed", kind:"breast", side: chipVal("side") || def, start, end: min ? new Date(start.getTime() + min * 60000) : null, note: val("f_note") });
-    });
-}
-
-function onSleep(){
-  const a = events.find(e => e.type === "sleep" && !e.end);
-  if (a) return stop(a);
-  openDlg("😴 Sleep",
-    timeField("f_start", "Fell asleep", new Date()) + timeField("f_end", "Woke up", null) +
-    `<p class="hint">Leave “Woke up” blank to start a timer.</p>` + noteField(),
-    () => {
-      const start = needStart(); if (!start) return false;
-      const end = fromInput(val("f_end"));
-      if (end && end < start){ alert("Woke up is before fell asleep"); return false; }
-      add({ type:"sleep", start, end, note: val("f_note") });
-    });
-}
-
-function dlgNappy(){
-  openDlg("💧 Nappy", chips("kind", NAPPY, "wet") + timeField("f_start", "Time", new Date()) + noteField(), () => {
-    const start = needStart(); if (!start) return false;
-    add({ type:"nappy", kind: chipVal("kind") || "wet", start, note: val("f_note") });
+function bottleSheet(e){
+  const lastB = recent.find(isBottle);
+  const milk = e?.milk || lastB?.milk || "formula";
+  sheet({
+    title: "Bottle Feed", tone: "feed",
+    body: `<div class="circles" data-name="milk">${[["breast", "breast<br>milk"], ["formula", "formula"], ["both", "both"]].map(([v, l]) => `<button type="button" data-v="${v}" class="${v === milk ? "on" : ""}">${l}</button>`).join("")}</div>
+      ${rowTime("f_start", "Start time", e?.start || new Date())}
+      <div class="one" ${milk === "both" ? "hidden" : ""}>
+        <label class="row2"><span class="serif">Amount</span><span class="unit"><input id="f_amt" type="number" inputmode="numeric" placeholder="0" value="${e && e.milk !== "both" ? (e.amount ?? "") : ""}">mL</span></label>
+        ${!e && lastB?.amount && lastB.milk !== "both" ? `<div class="uselast"><span>Use last amount: ${lastB.amount} mL?</span><button type="button" data-uselast="${lastB.amount}">Yes</button></div>` : ""}
+        <div class="chips" data-fill="f_amt">${[60, 90, 120, 150, 180, 210].map(v => `<button type="button" data-v="${v}">${v}</button>`).join("")}</div>
+      </div>
+      <div class="both" ${milk === "both" ? "" : "hidden"}>
+        <label class="row2"><span class="serif"><span class="dot" style="background:var(--bm)"></span>Breast milk</span><span class="unit"><input id="f_bm" type="number" inputmode="numeric" placeholder="0" value="${e?.milk === "both" ? (e.bm ?? "") : (!e && lastB?.milk === "both" ? lastB.bm ?? "" : "")}">mL</span></label>
+        <label class="row2"><span class="serif"><span class="dot" style="background:var(--fm)"></span>Formula</span><span class="unit"><input id="f_fm" type="number" inputmode="numeric" placeholder="0" value="${e?.milk === "both" ? (e.fm ?? "") : (!e && lastB?.milk === "both" ? lastB.fm ?? "" : "")}">mL</span></label>
+        <p class="hint" id="f_tot"></p>
+      </div>
+      ${rowNote(e?.note)}`,
+    onSave: () => {
+      const m = chipVal("milk") || milk;
+      const start = needTime(); if (!start) return false;
+      let d;
+      if (m === "both"){
+        const bm = parseInt(val("f_bm"), 10) || 0, fm = parseInt(val("f_fm"), 10) || 0;
+        if (bm < 0 || fm < 0 || bm + fm <= 0){ alert("Enter the breast milk and formula amounts in mL"); return false; }
+        d = { type: "feed", kind: "bottle", milk: "both", bm, fm, amount: bm + fm, start, note: val("f_note") };
+      } else {
+        const amount = parseInt(val("f_amt"), 10);
+        if (!(amount > 0)){ alert("Enter an amount in mL"); return false; }
+        d = { type: "feed", kind: "bottle", milk: m, amount, start, note: val("f_note"), bm: undefined, fm: undefined };
+      }
+      if (e) upd(e.id, d); else add(d);
+    },
+    onDelete: e ? () => del(e.id) : null,
   });
 }
 
-function dlgSolids(){
-  openDlg("🥣 Solids", `<label>What and how much<textarea id="f_note" rows="2" placeholder="e.g. 3 spoons sweet potato"></textarea></label>` + timeField("f_start", "Time", new Date()), () => {
-    const start = needStart(); if (!start) return false;
-    add({ type:"feed", kind:"solids", start, note: val("f_note") });
+function solidsSheet(e){
+  const recentFoods = [...new Set(recent.filter(isSolid).map(x => x.food).filter(Boolean))].slice(0, 8);
+  sheet({
+    title: "Solids", tone: "sol",
+    body: `<label class="row2"><span class="serif">Food</span><input id="f_food" type="text" placeholder="e.g. sweet potato" value="${esc(e ? (e.food || e.note || "") : "")}"></label>
+      ${recentFoods.length ? `<div class="chips" data-fill="f_food">${recentFoods.map(f => `<button type="button" data-v="${esc(f)}">${esc(f)}</button>`).join("")}</div>` : ""}
+      <label class="row2"><span class="serif">Amount</span><input id="f_qty" type="text" placeholder="e.g. 3 spoons" value="${esc(e?.qty || "")}"></label>
+      ${rowTime("f_start", "Time", e?.start || new Date())}
+      ${rowNote(e && e.food ? e.note : "")}`,
+    onSave: () => {
+      const food = val("f_food");
+      if (!food){ alert("Enter what the baby ate"); return false; }
+      const start = needTime(); if (!start) return false;
+      const d = { type: "feed", kind: "solids", food, qty: val("f_qty"), start, note: val("f_note") };
+      if (e) upd(e.id, d); else add(d);
+    },
+    onDelete: e ? () => del(e.id) : null,
   });
 }
 
-function dlgNote(){
-  openDlg("📝 Note", `<label>Note<textarea id="f_note" rows="3" placeholder="Temperature, medicine, milestone…"></textarea></label>` + timeField("f_start", "Time", new Date()), () => {
-    if (!val("f_note")){ alert("Write something first"); return false; }
-    const start = needStart(); if (!start) return false;
-    add({ type:"note", start, note: val("f_note") });
+function growthSheet(e){
+  const d0 = e?.start || new Date();
+  sheet({
+    title: "Growth", tone: "grow",
+    body: `<label class="row2"><span class="serif">Date</span><input id="f_date" type="date" value="${toDateInput(d0)}"></label>
+      <label class="row2"><span class="serif">Weight</span><span class="unit"><input id="f_w" type="number" inputmode="decimal" step="0.001" placeholder="—" value="${e?.weight ?? ""}">kg</span></label>
+      <label class="row2"><span class="serif">Height</span><span class="unit"><input id="f_h" type="number" inputmode="decimal" step="0.1" placeholder="—" value="${e?.height ?? ""}">cm</span></label>
+      <label class="row2"><span class="serif">Head size</span><span class="unit"><input id="f_hc" type="number" inputmode="decimal" step="0.1" placeholder="—" value="${e?.head ?? ""}">cm</span></label>
+      <p class="hint">Fill in any of the three. Leave the others blank.</p>`,
+    onSave: () => {
+      const ds = val("f_date"); if (!ds){ alert("Please set a date"); return false; }
+      const [Y, Mo, D] = ds.split("-").map(Number);
+      const f = id => { const v = parseFloat(val(id).replace(",", ".")); return v > 0 ? v : null; };
+      const weight = f("f_w"), height = f("f_h"), head = f("f_hc");
+      if (weight == null && height == null && head == null){ alert("Enter at least one measurement"); return false; }
+      if (weight != null && weight > 40){ alert("Weight should be in kg, e.g. 6.685"); return false; }
+      const d = { type: "growth", start: new Date(Y, Mo - 1, D, 12), weight, height, head };
+      if (e) upd(e.id, d); else add({ ...d, weight: weight ?? undefined, height: height ?? undefined, head: head ?? undefined });
+    },
+    onDelete: e ? () => del(e.id) : null,
   });
 }
 
-function dlgEdit(e){
-  const timed = isTimed(e);
-  let body = "";
-  if (e.kind === "bottle") body += `<label>Amount (ml)<input id="f_amt" type="number" inputmode="numeric" value="${e.amount ?? ""}"></label>`;
-  if (e.kind === "breast") body += chips("side", SIDES, e.side);
-  if (e.type === "nappy") body += chips("kind", NAPPY, e.kind);
-  body += timeField("f_start", timed ? "Start" : "Time", e.start);
-  if (timed) body += timeField("f_end", "End", e.end) + `<p class="hint">Leave End blank if it's still going.</p>`;
-  body += noteField(e.note);
-  openDlg(icon(e) + " Edit", body, () => {
-    const start = needStart(); if (!start) return false;
-    const upd = { start: Timestamp.fromDate(start), note: val("f_note") };
-    if (timed){
-      const end = fromInput(val("f_end"));
-      if (end && end < start){ alert("End is before start"); return false; }
-      upd.end = end ? Timestamp.fromDate(end) : null;
-    }
-    if (e.kind === "bottle") upd.amount = parseInt(val("f_amt"), 10) || null;
-    if (e.kind === "breast") upd.side = chipVal("side") || e.side;
-    if (e.type === "nappy") upd.kind = chipVal("kind") || e.kind;
-    save(updateDoc(doc(col, e.id), upd));
-  }, () => {
-    if (confirm("Delete this entry?")){ save(deleteDoc(doc(col, e.id))); dlg.close(); }
-  });
+function openEdit(id){
+  const e = recent.find(x => x.id === id) || growth.find(x => x.id === id);
+  if (!e) return;
+  if (isBottle(e)) return bottleSheet(e);
+  if (isSolid(e)) return solidsSheet(e);
+  if (e.type === "growth") return growthSheet(e);
+  sheet({ title: "Old entry", body: `<p class="hint">This type of entry is no longer shown in the app.</p>`, onDelete: () => del(e.id) });
 }
 
 /* ---------- taps ---------- */
-const ACTIONS = { bottle: dlgBottle, breast: dlgBreast, sleep: onSleep, nappy: dlgNappy, solids: dlgSolids, note: dlgNote };
-$("#app").addEventListener("click", ev => {
-  const a = ev.target.closest("[data-act]"); if (a) return ACTIONS[a.dataset.act]();
-  const s = ev.target.closest("[data-stop]"); if (s){ const e = events.find(x => x.id === s.dataset.stop); if (e) stop(e); return; }
-  const i = ev.target.closest("[data-id]"); if (i){ const e = events.find(x => x.id === i.dataset.id); if (e) dlgEdit(e); }
+const setTab = t => { ui.tab = t; try { localStorage.setItem("tab", t); } catch {} window.scrollTo(0, 0); render(); };
+document.addEventListener("click", ev => {
+  if (!live) return;
+  const t = ev.target;
+  const act = t.closest("[data-act]")?.dataset.act;
+  if (act){
+    if (act === "addFeed") return pickFeed();
+    if (act === "bottle") return bottleSheet();
+    if (act === "solids") return solidsSheet();
+    if (act === "addGrowth") return growthSheet();
+    if (act === "more"){ ui.more = !ui.more; return render(); }
+    if (act === "signout"){ if (confirm("Sign out?")) signOut(auth); return; }
+  }
+  const tab = t.closest("[data-tab]");
+  if (tab){ if (tab.dataset.metric) ui.metric = tab.dataset.metric; return setTab(tab.dataset.tab); }
+  const ed = t.closest("[data-edit]"); if (ed) return openEdit(ed.dataset.edit);
+  const s = t.closest("[data-sum]"); if (s){ ui.sum = s.dataset.sum; return render(); }
+  const tr = t.closest("[data-trend]"); if (tr){ ui.trend = +tr.dataset.trend; return render(); }
+  const mt = t.closest("[data-metric]"); if (mt){ ui.metric = mt.dataset.metric; ui.gsel = null; return render(); }
+  const wk = t.closest("[data-week]"); if (wk && !wk.disabled){ ui.week += +wk.dataset.week; return render(); }
+  const gp = t.closest("[data-gp]"); if (gp){ ui.gsel = gp.dataset.gp; return render(); }
 });
 
-/* ---------- clocks ---------- */
-setInterval(() => { const n = Date.now(); document.querySelectorAll(".tick").forEach(el => el.textContent = clock(n - +el.dataset.t)); }, 1000);
-setInterval(() => { if (live) render(); }, 30000);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && live) render(); });
+/* keep "ago" times fresh */
+setInterval(() => { if (live && !dlg.open) render(); }, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && live && !dlg.open) render(); });
 </script>
 </body>
 </html>
