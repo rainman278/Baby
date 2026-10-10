@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Baby">
+<meta name="theme-color" content="#f6f4ef">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Baby</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d1d1f;--mute:#6e6e73;--line:#e5e2db;--acc:#3b6cf6;--warn:#d64545;--on:#e8eefe}
+@media (prefers-color-scheme:dark){:root{--bg:#111214;--card:#1c1d20;--ink:#f2f2f2;--mute:#9a9aa0;--line:#2c2d31;--acc:#7ea0ff;--warn:#ff6b6b;--on:#25304d}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,sans-serif}
+body{padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom))}
+.hidden{display:none!important}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+h1{font-size:24px;margin:0}
+.link{background:none;border:0;color:var(--acc);font-size:15px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;min-width:0}
+.card .k{font-size:12px;color:var(--mute)}
+.card .v{font-size:18px;font-weight:600}
+.card .s{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.active{background:var(--on);border-radius:14px;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px}
+.active .clock{font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;margin-left:auto}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--warn);border:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.grid button{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 4px;font-size:14px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:4px}
+.grid button span{font-size:26px}
+.summary{font-size:14px;color:var(--mute);margin:4px 0 8px}
+.day{font-size:13px;font-weight:600;color:var(--mute);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.item{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.item .t{font-variant-numeric:tabular-nums;color:var(--mute);width:44px;flex:none}
+.item .ic{font-size:20px;flex:none}
+.item .main{flex:1;min-width:0}
+.item .note{font-size:13px;color:var(--mute);overflow-wrap:anywhere}
+.item .by{font-size:12px;color:var(--mute)}
+dialog{border:0;border-radius:18px;padding:0;width:min(440px,calc(100vw - 32px));background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.dlg{padding:18px}
+.dlg h2{margin:0 0 8px;font-size:20px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0}
+input,textarea{display:block;width:100%;margin-top:4px;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;-webkit-appearance:none;appearance:none;min-height:44px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:15px}
+.chips button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;gap:8px;margin-top:16px}
+.row .btn{flex:1;padding:12px 8px}
+.hint{font-size:12px;color:var(--mute);margin:4px 0}
+#login form{max-width:360px;margin:15vh auto 0}
+.err{color:var(--warn);font-size:14px;min-height:1.2em}
+</style>
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <form id="loginForm">
+    <h1>Baby log</h1>
+    <label>Email<input id="email" type="email" autocomplete="username" required></label>
+    <label>Password<input id="pw" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="loginErr"></p>
+    <button class="btn" style="width:100%">Log in</button>
+  </form>
+</div>
+
+<div id="app" class="hidden">
+  <header><h1>Baby</h1><button class="link" id="signout">Sign out</button></header>
+  <div class="cards" id="cards"></div>
+  <div id="actives"></div>
+  <div class="grid">
+    <button data-act="bottle"><span>🍼</span>Bottle</button>
+    <button data-act="breast"><span>🤱</span>Breast</button>
+    <button data-act="sleep"><span>😴</span>Sleep</button>
+    <button data-act="nappy"><span>💧</span>Nappy</button>
+    <button data-act="solids"><span>🥣</span>Solids</button>
+    <button data-act="note"><span>📝</span>Note</button>
+  </div>
+  <div class="summary" id="summary"></div>
+  <p class="err" id="err"></p>
+  <div id="timeline"></div>
+</div>
+
+<dialog id="dlg">
+  <div class="dlg">
+    <h2 id="dlgTitle"></h2>
+    <div id="dlgBody"></div>
+    <div class="row">
+      <button class="btn danger" id="dlgDel" type="button">Delete</button>
+      <button class="btn ghost" id="dlgCancel" type="button">Cancel</button>
+      <button class="btn" id="dlgSave" type="button">Save</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="module">
+import { firebaseConfig } from "./config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, onSnapshot, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const fb = initializeApp(firebaseConfig);
+const auth = getAuth(fb);
+const db = initializeFirestore(fb, { localCache: persistentLocalCache() }); // works offline, syncs later
+const col = collection(db, "events");
+
+let events = [], unsub = null, me = "", live = false;
+const $ = s => document.querySelector(s);
+const dlg = $("#dlg");
+
+/* ---------- helpers ---------- */
+const pad = n => String(n).padStart(2, "0");
+const toInput = d => d ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}` : "";
+const fromInput = s => s ? new Date(s) : null;
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const val = id => (document.getElementById(id)?.value || "").trim();
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+function dur(ms){ const m = Math.max(0, Math.round(ms/60000)), h = Math.floor(m/60); return h ? `${h}h ${m%60}m` : `${m}m`; }
+function clock(ms){ const s = Math.max(0, Math.floor(ms/1000)); return `${Math.floor(s/3600)}:${pad(Math.floor(s/60)%60)}:${pad(s%60)}`; }
+function dayLabel(d){
+  const t = new Date(); t.setHours(0,0,0,0);
+  const x = new Date(d); x.setHours(0,0,0,0);
+  const diff = Math.round((t - x) / 864e5);
+  return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : d.toLocaleDateString(undefined, { weekday:"short", day:"numeric", month:"short" });
+}
+const SIDES = [["L","Left"],["R","Right"],["both","Both"]];
+const NAPPY = [["wet","💧 Wet"],["dirty","💩 Dirty"],["both","Both"]];
+const isTimed = e => e.type === "sleep" || (e.type === "feed" && e.kind === "breast");
+
+function icon(e){
+  if (e.type === "feed") return e.kind === "breast" ? "🤱" : e.kind === "solids" ? "🥣" : "🍼";
+  if (e.type === "nappy") return e.kind === "wet" ? "💧" : "💩";
+  return e.type === "sleep" ? "😴" : "📝";
+}
+function label(e){
+  if (e.type === "feed"){
+    if (e.kind === "bottle") return `Bottle ${e.amount ?? "?"} ml`;
+    if (e.kind === "breast") return `Breast ${({L:"left",R:"right",both:"both"})[e.side] || ""}` + (e.end ? ` · ${dur(e.end - e.start)}` : " · in progress");
+    return "Solids";
+  }
+  if (e.type === "sleep") return "Sleep" + (e.end ? ` · ${dur(e.end - e.start)}` : " · in progress");
+  if (e.type === "nappy") return ({ wet:"Wet nappy", dirty:"Dirty nappy", both:"Wet + dirty" })[e.kind] || "Nappy";
+  return e.note || "Note";
+}
+
+/* ---------- auth ---------- */
+onAuthStateChanged(auth, user => {
+  if (user){
+    me = (user.email || "").split("@")[0];
+    live = true; show("app"); subscribe();
+  } else {
+    if (unsub) unsub(); unsub = null; events = []; live = false; show("login");
+  }
+});
+function show(id){
+  $("#login").classList.toggle("hidden", id !== "login");
+  $("#app").classList.toggle("hidden", id !== "app");
+}
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault(); $("#loginErr").textContent = "";
+  try { await signInWithEmailAndPassword(auth, val("email"), $("#pw").value); }
+  catch (err){ $("#loginErr").textContent = "Login failed (" + (err.code || err.message) + ")"; }
+});
+$("#signout").onclick = () => { if (confirm("Sign out?")) signOut(auth); };
+
+/* ---------- data ---------- */
+function subscribe(){
+  const since = Timestamp.fromDate(new Date(Date.now() - 14 * 864e5)); // last 14 days
+  const q = query(col, where("start", ">=", since), orderBy("start", "desc"), limit(800));
+  unsub = onSnapshot(q, snap => {
+    $("#err").textContent = "";
+    events = snap.docs.map(d => {
+      const x = d.data();
+      return { id: d.id, ...x, start: x.start.toDate(), end: x.end ? x.end.toDate() : null };
+    });
+    render();
+  }, err => { $("#err").textContent = "Sync error (" + err.code + "). Check your Firestore rules."; });
+}
+const save = p => p.catch(err => alert("Couldn't save: " + (err.code || err.message)));
+function add(d){
+  const data = { ...d, start: Timestamp.fromDate(d.start), end: d.end ? Timestamp.fromDate(d.end) : null, by: me, createdAt: serverTimestamp() };
+  if (!data.note) delete data.note;
+  save(addDoc(col, data)); // not awaited: works offline, syncs when back online
+}
+const stop = e => save(updateDoc(doc(col, e.id), { end: Timestamp.now() }));
+
+/* ---------- render ---------- */
+function card(k, v, s){ return `<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${esc(s)}</div></div>`; }
+
+function render(){
+  const now = Date.now();
+  const lastFeed = events.find(e => e.type === "feed");
+  const sleeping = events.find(e => e.type === "sleep" && !e.end);
+  const lastSleep = events.find(e => e.type === "sleep" && e.end);
+  const lastNappy = events.find(e => e.type === "nappy");
+
+  $("#cards").innerHTML =
+    card("Since feed", lastFeed ? dur(now - lastFeed.start) : "—", lastFeed ? label(lastFeed) : "") +
+    (sleeping
+      ? card("Asleep", dur(now - sleeping.start), "since " + hm(sleeping.start))
+      : card("Awake", lastSleep ? dur(now - lastSleep.end) : "—", lastSleep ? "woke " + hm(lastSleep.end) : "")) +
+    card("Since nappy", lastNappy ? dur(now - lastNappy.start) : "—", lastNappy ? label(lastNappy) : "");
+
+  const act = events.filter(e => isTimed(e) && !e.end);
+  $("#actives").innerHTML = act.map(e => `
+    <div class="active">
+      <span style="font-size:24px">${icon(e)}</span>
+      <div>${e.type === "sleep" ? "Sleeping" : "Breastfeeding"}<div class="hint">since ${hm(e.start)}</div></div>
+      <span class="clock tick" data-t="${e.start.getTime()}">${clock(now - e.start)}</span>
+      <button class="btn" data-stop="${e.id}">Stop</button>
+    </div>`).join("");
+
+  $('[data-act="sleep"]').innerHTML = sleeping ? "<span>🌅</span>Wake up" : "<span>😴</span>Sleep";
+
+  // today's summary
+  const t0 = new Date(); t0.setHours(0,0,0,0);
+  const today = events.filter(e => e.start >= t0);
+  const feeds = today.filter(e => e.type === "feed");
+  const ml = feeds.reduce((s, e) => s + (e.kind === "bottle" ? (e.amount || 0) : 0), 0);
+  let sleepMs = 0;
+  for (const e of events) if (e.type === "sleep"){
+    const s = Math.max(e.start.getTime(), t0.getTime()), en = (e.end || new Date()).getTime();
+    if (en > s) sleepMs += en - s;
+  }
+  const naps = today.filter(e => e.type === "nappy");
+  const wet = naps.filter(e => e.kind !== "dirty").length, dirty = naps.filter(e => e.kind !== "wet").length;
+  $("#summary").textContent = `Today: ${feeds.length} feeds${ml ? ` (${ml} ml)` : ""} · ${dur(sleepMs)} sleep · ${wet} wet, ${dirty} dirty`;
+
+  // timeline
+  let html = "", lastDay = "";
+  for (const e of events){
+    const d = dayLabel(e.start);
+    if (d !== lastDay){ html += `<div class="day">${d}</div>`; lastDay = d; }
+    html += `<div class="item" data-id="${e.id}">
+      <div class="t">${hm(e.start)}</div><div class="ic">${icon(e)}</div>
+      <div class="main"><div>${esc(label(e))}</div>
+        ${e.note && e.type !== "note" ? `<div class="note">${esc(e.note)}</div>` : ""}
+        ${e.by ? `<div class="by">${esc(e.by)}</div>` : ""}
+      </div></div>`;
+  }
+  $("#timeline").innerHTML = html || `<p class="hint">Nothing logged yet. Tap a button above.</p>`;
+}
+
+/* ---------- dialogs ---------- */
+const timeField = (id, lab, d) => `<label>${lab}<input id="${id}" type="datetime-local" value="${toInput(d)}"></label>`;
+const noteField = (v = "") => `<label>Note (optional)<textarea id="f_note" rows="2">${esc(v)}</textarea></label>`;
+const chips = (name, opts, sel) => `<div class="chips" data-name="${name}">${opts.map(([v, l]) => `<button type="button" data-v="${v}" class="${v === sel ? "on" : ""}">${l}</button>`).join("")}</div>`;
+const chipVal = name => dlg.querySelector(`.chips[data-name="${name}"] .on`)?.dataset.v;
+
+dlg.addEventListener("click", e => {
+  const b = e.target.closest(".chips button"); if (!b) return;
+  const box = b.parentElement;
+  if (box.dataset.fill){ document.getElementById(box.dataset.fill).value = b.dataset.v; return; }
+  box.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on");
+});
+$("#dlgCancel").onclick = () => dlg.close();
+
+function openDlg(title, body, onSave, onDelete){
+  $("#dlgTitle").textContent = title;
+  $("#dlgBody").innerHTML = body;
+  $("#dlgSave").onclick = () => { if (onSave() !== false) dlg.close(); };
+  $("#dlgDel").hidden = !onDelete;
+  $("#dlgDel").onclick = onDelete || null;
+  dlg.showModal();
+}
+function needStart(){ const s = fromInput(val("f_start")); if (!s){ alert("Please set a time"); return null; } return s; }
+
+function dlgBottle(){
+  const last = events.find(e => e.kind === "bottle")?.amount || 90;
+  openDlg("🍼 Bottle",
+    `<label>Amount (ml)<input id="f_amt" type="number" inputmode="numeric" value="${last}"></label>
+     <div class="chips" data-fill="f_amt">${[60,90,120,150,180,210].map(v => `<button type="button" data-v="${v}">${v}</button>`).join("")}</div>
+     ${timeField("f_start", "Time", new Date())}${noteField()}`,
+    () => {
+      const amount = parseInt(val("f_amt"), 10); if (!amount){ alert("Enter an amount"); return false; }
+      const start = needStart(); if (!start) return false;
+      add({ type:"feed", kind:"bottle", amount, start, note: val("f_note") });
+    });
+}
+
+function dlgBreast(){
+  const lastSide = events.find(e => e.kind === "breast")?.side;
+  const def = lastSide === "L" ? "R" : "L";
+  openDlg("🤱 Breastfeed",
+    chips("side", SIDES, def) +
+    (lastSide ? `<p class="hint">Last time: ${lastSide === "both" ? "both" : lastSide === "L" ? "left" : "right"}</p>` : "") +
+    timeField("f_start", "Start", new Date()) +
+    `<label>Minutes<input id="f_min" type="number" inputmode="numeric" placeholder="Leave blank to start a timer"></label>` + noteField(),
+    () => {
+      const start = needStart(); if (!start) return false;
+      const min = parseInt(val("f_min"), 10);
+      add({ type:"feed", kind:"breast", side: chipVal("side") || def, start, end: min ? new Date(start.getTime() + min * 60000) : null, note: val("f_note") });
+    });
+}
+
+function onSleep(){
+  const a = events.find(e => e.type === "sleep" && !e.end);
+  if (a) return stop(a);
+  openDlg("😴 Sleep",
+    timeField("f_start", "Fell asleep", new Date()) + timeField("f_end", "Woke up", null) +
+    `<p class="hint">Leave “Woke up” blank to start a timer.</p>` + noteField(),
+    () => {
+      const start = needStart(); if (!start) return false;
+      const end = fromInput(val("f_end"));
+      if (end && end < start){ alert("Woke up is before fell asleep"); return false; }
+      add({ type:"sleep", start, end, note: val("f_note") });
+    });
+}
+
+function dlgNappy(){
+  openDlg("💧 Nappy", chips("kind", NAPPY, "wet") + timeField("f_start", "Time", new Date()) + noteField(), () => {
+    const start = needStart(); if (!start) return false;
+    add({ type:"nappy", kind: chipVal("kind") || "wet", start, note: val("f_note") });
+  });
+}
+
+function dlgSolids(){
+  openDlg("🥣 Solids", `<label>What and how much<textarea id="f_note" rows="2" placeholder="e.g. 3 spoons sweet potato"></textarea></label>` + timeField("f_start", "Time", new Date()), () => {
+    const start = needStart(); if (!start) return false;
+    add({ type:"feed", kind:"solids", start, note: val("f_note") });
+  });
+}
+
+function dlgNote(){
+  openDlg("📝 Note", `<label>Note<textarea id="f_note" rows="3" placeholder="Temperature, medicine, milestone…"></textarea></label>` + timeField("f_start", "Time", new Date()), () => {
+    if (!val("f_note")){ alert("Write something first"); return false; }
+    const start = needStart(); if (!start) return false;
+    add({ type:"note", start, note: val("f_note") });
+  });
+}
+
+function dlgEdit(e){
+  const timed = isTimed(e);
+  let body = "";
+  if (e.kind === "bottle") body += `<label>Amount (ml)<input id="f_amt" type="number" inputmode="numeric" value="${e.amount ?? ""}"></label>`;
+  if (e.kind === "breast") body += chips("side", SIDES, e.side);
+  if (e.type === "nappy") body += chips("kind", NAPPY, e.kind);
+  body += timeField("f_start", timed ? "Start" : "Time", e.start);
+  if (timed) body += timeField("f_end", "End", e.end) + `<p class="hint">Leave End blank if it's still going.</p>`;
+  body += noteField(e.note);
+  openDlg(icon(e) + " Edit", body, () => {
+    const start = needStart(); if (!start) return false;
+    const upd = { start: Timestamp.fromDate(start), note: val("f_note") };
+    if (timed){
+      const end = fromInput(val("f_end"));
+      if (end && end < start){ alert("End is before start"); return false; }
+      upd.end = end ? Timestamp.fromDate(end) : null;
+    }
+    if (e.kind === "bottle") upd.amount = parseInt(val("f_amt"), 10) || null;
+    if (e.kind === "breast") upd.side = chipVal("side") || e.side;
+    if (e.type === "nappy") upd.kind = chipVal("kind") || e.kind;
+    save(updateDoc(doc(col, e.id), upd));
+  }, () => {
+    if (confirm("Delete this entry?")){ save(deleteDoc(doc(col, e.id))); dlg.close(); }
+  });
+}
+
+/* ---------- taps ---------- */
+const ACTIONS = { bottle: dlgBottle, breast: dlgBreast, sleep: onSleep, nappy: dlgNappy, solids: dlgSolids, note: dlgNote };
+$("#app").addEventListener("click", ev => {
+  const a = ev.target.closest("[data-act]"); if (a) return ACTIONS[a.dataset.act]();
+  const s = ev.target.closest("[data-stop]"); if (s){ const e = events.find(x => x.id === s.dataset.stop); if (e) stop(e); return; }
+  const i = ev.target.closest("[data-id]"); if (i){ const e = events.find(x => x.id === i.dataset.id); if (e) dlgEdit(e); }
+});
+
+/* ---------- clocks ---------- */
+setInterval(() => { const n = Date.now(); document.querySelectorAll(".tick").forEach(el => el.textContent = clock(n - +el.dataset.t)); }, 1000);
+setInterval(() => { if (live) render(); }, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && live) render(); });
+</script>
+</body>
+</html>
