@@ -44,7 +44,18 @@ main{padding:calc(env(safe-area-inset-top) + 14px) 16px calc(110px + env(safe-ar
 .hd{display:flex;align-items:flex-start;justify-content:space-between;margin:2px 2px 18px}
 .hd .date{font-size:15px;color:var(--mute)}
 .hd h1{font-family:var(--round);font-size:32px;line-height:1.1;margin:2px 0 0;letter-spacing:-.01em}
-.iconbtn{border:0;background:var(--card);width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:var(--mute)}
+.iconbtn{position:relative;border:0;background:var(--card);width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:var(--mute)}
+.iconbtn .due{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--fm);box-shadow:0 0 0 2px var(--card)}
+.bk{background:var(--soft);border-radius:18px;padding:14px 16px;margin:10px 0}
+.bk .st{font-size:15px}
+.bk .st b{font-family:var(--round)}
+.bkbtn{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--priSoft);border-radius:16px;padding:14px 16px;margin-top:10px;text-align:left;font-weight:600;font-size:16px}
+.bkbtn small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.bkbtn:disabled{opacity:.45}
+.bkbtn .ic{color:var(--pri);width:26px;height:26px}
+.bkbtn.plain{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.bkbtn.plain .ic{color:var(--mute)}
+.bkh{font-family:var(--round);font-size:17px;margin:22px 0 2px}
 .pagehead{display:flex;align-items:flex-end;justify-content:space-between;margin:2px 2px 16px}
 .pagehead h1{font-family:var(--round);font-size:32px;margin:0;letter-spacing:-.01em}
 .pill{border:0;background:var(--pri);color:#fff;border-radius:999px;padding:9px 16px;font-size:15px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
@@ -252,7 +263,7 @@ textarea.box{min-height:70px;resize:vertical}
 import { firebaseConfig } from "./config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeFirestore, persistentLocalCache, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, onSnapshot, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, persistentLocalCache, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, onSnapshot, serverTimestamp, Timestamp, getDocsFromServer, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const fb = initializeApp(firebaseConfig);
 const auth = getAuth(fb);
@@ -278,6 +289,9 @@ const P = {
   clock: `<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>`,
   bars: `<path d="M4 20.5h16"/><rect x="5" y="11" width="3.2" height="7" rx="1.2"/><rect x="10.4" y="5.5" width="3.2" height="12.5" rx="1.2"/><rect x="15.8" y="8.5" width="3.2" height="9.5" rx="1.2"/>`,
   sprout: `<path d="M12 21v-8.5"/><path class="fc" d="M12 12.5c0-4.2 3-6.5 7.5-6.5 0 4.2-3 6.5-7.5 6.5z"/><path d="M12 12.5c0-4.2 3-6.5 7.5-6.5 0 4.2-3 6.5-7.5 6.5zM12 15c0-3.2-2.3-5.5-6.5-5.5 0 3.2 2.3 5.5 6.5 5.5z"/>`,
+  save: `<path d="M12 4v10.5M7.5 10l4.5 4.5 4.5-4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3"/>`,
+  table: `<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10"/>`,
+  restore: `<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.7h3.7"/><path d="M12 8.5V12l2.5 1.5"/>`,
   out: `<path d="M14.5 4H18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3.5M10 8l-4 4 4 4M6 12h9.5"/>`,
   x: `<path d="M7 7l10 10M17 7L7 17"/>`,
   plus: `<path d="M12 5v14M5 12h14"/>`,
@@ -439,7 +453,7 @@ function renderToday(){
 
   $("#v-today").innerHTML = `
     <div class="hd"><div><div class="date">${now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" })}</div><h1>${greeting()}</h1></div>
-      <button class="iconbtn" data-act="signout" aria-label="Sign out">${ic("out")}</button></div>
+      <button class="iconbtn" data-act="backup" aria-label="Backup and account">${ic("save")}${backupDue() ? `<span class="due"></span>` : ""}</button></div>
 
     <div class="quick">
       <button class="qa milk" data-act="bottle">${ic("bottle")}<span>Bottle<small>${lastB ? `last ${sv} ${su} ago` : "log a feed"}</small></span></button>
@@ -661,6 +675,8 @@ function sheet({ title, kind, icon, body, onSave, onDelete, saveLabel = "Save" }
 $("#shX").onclick = () => dlg.close();
 dlg.addEventListener("click", e => {
   if (e.target === dlg) return dlg.close();
+  const bk = e.target.closest("[data-bk]");
+  if (bk){ if (!bk.disabled) backupAction(bk.dataset.bk); return; }
   const st = e.target.closest("[data-step]");
   if (st){
     const [id, d] = st.dataset.step.split(":"); const inp = document.getElementById(id);
@@ -785,6 +801,104 @@ function openEdit(id){
   sheet({ title: "Old entry", body: `<p class="hint">This type of entry is no longer shown in the app.</p>`, onDelete: () => del(e.id) });
 }
 
+/* ---------- backup & restore ---------- */
+const TS_KEYS = ["start", "end", "createdAt"];
+let snapshotAll = null;            // every entry, fetched fresh from the server when the sheet opens
+const lastBackup = () => { try { return +localStorage.getItem("lastBackup") || 0; } catch { return 0; } };
+const backupDue = () => Date.now() - lastBackup() > 7 * DAY;
+function plain(d){
+  const x = d.data(), o = { id: d.id };
+  for (const k in x){ const v = x[k]; o[k] = v && typeof v.toDate === "function" ? v.toDate().toISOString() : v; }
+  return o;
+}
+function stamp(){ const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function csvOf(rows){
+  const cols = ["date", "time", "type", "kind", "milk", "amount_ml", "breast_milk_ml", "formula_ml", "food", "quantity", "weight_kg", "height_cm", "head_cm", "note", "logged_by", "start", "end", "id"];
+  const q = v => { const s = v == null ? "" : String(v); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const lines = rows.map(r => {
+    const d = r.start ? new Date(r.start) : null;
+    const split = r.kind === "bottle" ? (r.milk === "both" ? [r.bm, r.fm] : r.milk === "breast" ? [r.amount, ""] : r.milk === "formula" ? ["", r.amount] : ["", ""]) : ["", ""];
+    return [d ? toDateInput(d) : "", d ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : "", r.type, r.kind, r.milk, r.amount, split[0], split[1],
+      r.food, r.qty, r.weight, r.height, r.head, r.note, r.by, r.start, r.end, r.id].map(q).join(",");
+  });
+  return "﻿" + cols.join(",") + "\r\n" + lines.join("\r\n") + "\r\n";
+}
+async function deliver(name, text, mime){
+  const file = new File([text], name, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })){
+    try { await navigator.share({ files: [file], title: name }); return true; }
+    catch (err){ if (err.name === "AbortError") return false; }
+  }
+  const url = URL.createObjectURL(file), a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return true;
+}
+function bkStatus(){
+  const el = document.getElementById("bkStatus"); if (!el) return;
+  const lb = lastBackup();
+  const when = lb ? `Last saved from this phone ${Math.max(0, Math.round((Date.now() - lb) / DAY)) === 0 ? "today" : Math.round((Date.now() - lb) / DAY) + " days ago"}.` : "Not saved from this phone yet.";
+  const n = snapshotAll ? `<b>${snapshotAll.length}</b> entries ready to save.` : snapshotAll === false ? "Couldn't reach the server. Connect to the internet and reopen this screen." : "Loading every entry from the server…";
+  el.innerHTML = `<div class="st">${n}</div><div class="mute" style="font-size:14px;margin-top:4px">${when}</div>`;
+  dlg.querySelectorAll("[data-bk=json],[data-bk=csv]").forEach(b => b.disabled = !snapshotAll);
+}
+function backupSheet(){
+  snapshotAll = null;
+  sheet({
+    title: "Backup", kind: "milk", icon: "save",
+    body: `<div class="bk" id="bkStatus"></div>
+      <button type="button" class="bkbtn" data-bk="json" disabled>${ic("save")}<span>Save full backup<small>One file with every entry. Use it to restore if anything is lost.</small></span></button>
+      <button type="button" class="bkbtn" data-bk="csv" disabled>${ic("table")}<span>Save as spreadsheet<small>Opens in Numbers or Excel. For reading, not restoring.</small></span></button>
+      <p class="hint">Choose Save to Files and pick iCloud Drive, or send it to yourself by email.</p>
+      <div class="bkh">Restore</div>
+      <button type="button" class="bkbtn plain" data-bk="restore">${ic("restore")}<span>Restore from a backup file<small>Adds back any entries that are missing. Entries already in the app are left as they are.</small></span></button>
+      <input type="file" id="bkFile" accept=".json,application/json" hidden>
+      <div class="bkh">Account</div>
+      <button type="button" class="bkbtn plain" data-bk="signout">${ic("out")}<span>Sign out<small>Signed in as ${esc(me)}</small></span></button>`,
+  });
+  bkStatus();
+  getDocsFromServer(col).then(snap => {
+    snapshotAll = snap.docs.map(plain).sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
+    bkStatus();
+  }).catch(() => { snapshotAll = false; bkStatus(); });
+  const inp = document.getElementById("bkFile");
+  inp.onchange = () => { const f = inp.files[0]; if (f) restoreFrom(f); inp.value = ""; };
+}
+async function backupAction(what){
+  if (what === "signout"){ if (confirm("Sign out?")){ dlg.close(); signOut(auth); } return; }
+  if (what === "restore") return document.getElementById("bkFile").click();
+  if (!snapshotAll) return;
+  const ok = what === "json"
+    ? await deliver(`baby-log-backup-${stamp()}.json`, JSON.stringify({ app: "baby-log", version: 1, exportedAt: new Date().toISOString(), count: snapshotAll.length, events: snapshotAll }, null, 1), "application/json")
+    : await deliver(`baby-log-${stamp()}.csv`, csvOf(snapshotAll), "text/csv");
+  if (ok && what === "json"){ try { localStorage.setItem("lastBackup", String(Date.now())); } catch {} bkStatus(); render(); }
+}
+async function restoreFrom(file){
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { return alert("That file isn't a baby log backup. Choose the .json file saved from this screen."); }
+  const rows = Array.isArray(data?.events) ? data.events : null;
+  if (!rows || data.app !== "baby-log") return alert("That file isn't a baby log backup. Choose the .json file saved from this screen.");
+  let have;
+  try { have = new Set((await getDocsFromServer(col)).docs.map(d => d.id)); }
+  catch { return alert("Couldn't reach the server. Connect to the internet and try again."); }
+  const missing = rows.filter(r => r && r.id && !have.has(r.id));
+  if (!missing.length) return alert(`Nothing to restore. All ${rows.length} entries in this backup are already in the app.`);
+  if (!confirm(`Restore ${missing.length} missing ${missing.length === 1 ? "entry" : "entries"} from this backup? Entries already in the app won't change.`)) return;
+  try {
+    for (let i = 0; i < missing.length; i += 400){
+      const b = writeBatch(db);
+      for (const r of missing.slice(i, i + 400)){
+        const { id, ...rest } = r;
+        for (const k of TS_KEYS) if (typeof rest[k] === "string") rest[k] = Timestamp.fromDate(new Date(rest[k]));
+        b.set(doc(col, id), rest);
+      }
+      await b.commit();
+    }
+    alert(`Restored ${missing.length} ${missing.length === 1 ? "entry" : "entries"}.`);
+    dlg.close();
+  } catch (err){ alert("Restore stopped: " + (err.code || err.message) + ". Entries restored before the error are kept. Try again to add the rest."); }
+}
+
 /* ---------- taps ---------- */
 const setTab = t => { ui.tab = t; try { localStorage.setItem("tab", t); } catch {} window.scrollTo(0, 0); render(); };
 document.addEventListener("click", ev => {
@@ -796,7 +910,7 @@ document.addEventListener("click", ev => {
     if (act === "solids") return solidsSheet();
     if (act === "addGrowth") return growthSheet();
     if (act === "more"){ ui.more = !ui.more; return render(); }
-    if (act === "signout"){ if (confirm("Sign out?")) signOut(auth); return; }
+    if (act === "backup") return backupSheet();
   }
   const tab = t.closest("[data-tab]");
   if (tab){ if (tab.dataset.metric){ ui.metric = tab.dataset.metric; ui.gsel = null; } return setTab(tab.dataset.tab); }
