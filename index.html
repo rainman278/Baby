@@ -152,6 +152,9 @@ table.t{width:100%;border-collapse:collapse;font-size:14px}
 .t th:last-child,.t td:last-child{padding-right:18px}
 .t th{color:var(--mute);font-weight:500;font-size:12px;padding-top:4px}
 .t td b{font-family:var(--round)}
+.t td .wd{display:block;font-size:11px;color:var(--mute);line-height:1.1}
+.t td:first-child{white-space:nowrap}
+.t th,.t td{padding-left:4px;padding-right:4px}
 .gtip{margin:0 12px 14px;background:var(--growSoft);border-radius:16px;padding:12px 14px}
 .gtip .v{font-family:var(--round);font-size:24px;font-weight:700}
 .gtip .s{font-size:14px;color:var(--mute)}
@@ -315,12 +318,15 @@ function timeParts(d){
   return m ? [m[1], m[2].replace(/\./g, "").toLowerCase()] : [s, ""];
 }
 const fmtT = d => timeParts(d).join("");
-const fmtD = d => d.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
-const fmtDM = d => d.toLocaleDateString([], { day: "numeric", month: "short" });
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const fmtD = d => `${d.getDate()}-${MON[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`;   // 30-Sep-26
+const fmtDM = fmtD;
+const fmtShort = d => `${d.getDate()}-${MON[d.getMonth()]}`;                                     // chart axis only
 const num = (v, dec) => (+v).toFixed(dec).replace(/\.?0+$/, "");
 function dayName(d){
   const diff = Math.round((sod(new Date()) - sod(d)) / DAY);
-  return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short" });
+  return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : `${WD[d.getDay()]} ${fmtD(d)}`;
 }
 function since(d){
   const m = Math.max(0, Math.round((Date.now() - d) / 60000));
@@ -568,7 +574,7 @@ function renderTrends(){
   const avg = done.length ? Math.round(done.reduce((a, x) => a + x.ml, 0) / done.length) : 0;
   const avgN = done.length ? (done.reduce((a, x) => a + x.n, 0) / done.length).toFixed(1) : "0";
   const hasOth = days.some(x => x.oth);
-  const rows = [...days].reverse().map(x => `<tr><td>${+x.d === +today ? "Today" : x.d.toLocaleDateString([], { weekday: "short" }) + " " + x.d.getDate()}</td>
+  const rows = [...days].reverse().map(x => `<tr><td>${fmtD(x.d)}<small class="wd">${+x.d === +today ? "Today" : WD[x.d.getDay()]}</small></td>
     <td>${x.n}</td><td>${x.bm}</td><td>${x.fm}</td><td><b>${x.ml}</b></td><td>${x.sol}</td></tr>`).join("");
 
   $("#v-trends").innerHTML = `
@@ -582,7 +588,7 @@ function renderTrends(){
       <p class="note">Averages leave out today, because it isn't finished yet.</p>
     </div>
     <div class="sec">
-      <table class="t"><thead><tr><th>Day</th><th>Bottles</th><th>Breast</th><th>Formula</th><th>Total mL</th><th>Solids</th></tr></thead><tbody>${rows}</tbody></table>
+      <table class="t"><thead><tr><th>Day</th><th>Bottles</th><th>Breast</th><th>Formula</th><th>Total</th><th>Solids</th></tr></thead><tbody>${rows}</tbody></table>
     </div>`;
 }
 
@@ -598,7 +604,7 @@ function timeTicks(t0, t1){
   } else {
     const step = span > 35 ? 14 : span > 14 ? 7 : span > 6 ? 2 : 1;
     let d = sod(new Date(t0)); if (+d < t0) d = addDays(d, 1);
-    while (+d <= t1){ out.push({ t: +d, l: fmtDM(d) }); d = addDays(d, step); }
+    while (+d <= t1){ out.push({ t: +d, l: fmtShort(d) }); d = addDays(d, step); }
   }
   return out;
 }
